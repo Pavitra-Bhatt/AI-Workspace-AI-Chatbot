@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/chatbot_db
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - chatbot-network
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=chatbot_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    # No ports exposed - database only accessible from within Docker network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chatbot-network
+
+  redis:
+    image: redis:7-alpine
+    # No ports exposed - Redis only accessible from within Docker network
+    volumes:
+      - redis_data:/data
+    networks:
+      - chatbot-network
+
+  celery:
+    build: .
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/chatbot_db
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - chatbot-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  chatbot-network:
+    driver: bridge 

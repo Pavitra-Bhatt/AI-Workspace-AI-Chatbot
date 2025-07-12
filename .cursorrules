@@ -1,0 +1,326 @@
+# AI Chatbot Backend - Cursor Rules
+
+## Project Overview
+This is a production-ready AI chatbot backend built with FastAPI, featuring:
+- User authentication with JWT
+- Real-time messaging via WebSockets
+- AI integration with local models (free tier)
+- FAQ system with semantic search
+- Multilingual support
+- GDPR compliance
+- Admin dashboard capabilities
+
+## Architecture Guidelines
+
+### Project Structure
+```
+backend/
+├── app/
+│   ├── api/           # API routes and endpoints
+│   ├── auth/          # Authentication and authorization
+│   ├── models/        # SQLAlchemy database models
+│   ├── schemas/       # Pydantic schemas for validation
+│   ├── services/      # Business logic and external integrations
+│   ├── config.py      # Application configuration
+│   ├── database.py    # Database connection and session management
+│   └── main.py        # FastAPI application entry point
+├── requirements.txt   # Python dependencies
+├── docker-compose.yml # Docker orchestration
+└── README.md         # Project documentation
+```
+
+### Database Design
+- Use SQLAlchemy with async support
+- Models: User, Conversation, Message, FAQ, FAQCategory, Analytics, AuditLog
+- Use PostgreSQL in production, SQLite for local development
+- Implement proper relationships and cascading deletes
+- Use enums for status fields (MessageType, MessageStatus, FAQStatus)
+
+### API Design
+- RESTful API with FastAPI
+- Use Pydantic schemas for request/response validation
+- Implement proper error handling with HTTP status codes
+- Use dependency injection for database sessions and authentication
+- Rate limiting with slowapi
+- CORS middleware for frontend integration
+
+## Coding Standards
+
+### Python Code Style
+- Follow PEP 8 guidelines
+- Use type hints for all function parameters and return values
+- Use async/await for database operations and external API calls
+- Use structured logging with structlog
+- Implement proper exception handling with specific error types
+
+### FastAPI Best Practices
+- Use dependency injection for shared resources
+- Implement proper response models with Pydantic
+- Use status codes from fastapi.status
+- Implement middleware for logging, CORS, and rate limiting
+- Use WebSocket for real-time features
+
+### Database Patterns
+- Use async SQLAlchemy with asyncpg for PostgreSQL
+- Implement repository pattern for complex queries
+- Use Alembic for database migrations
+- Implement proper transaction management
+- Use connection pooling for performance
+
+### Security Guidelines
+- JWT tokens for authentication
+- Password hashing with bcrypt
+- Input validation with Pydantic
+- Rate limiting to prevent abuse
+- CORS configuration for frontend security
+- Audit logging for GDPR compliance
+
+## AI Integration Guidelines
+
+### AI Service Architecture
+- Support multiple AI providers (local, OpenAI, HuggingFace)
+- Implement fallback mechanisms for AI failures
+- Use local models for free tier (sentence-transformers, transformers)
+- Implement embedding generation for semantic search
+- Content moderation with keyword-based filtering
+
+### FAQ System
+- Semantic search using vector embeddings
+- Text-based search as fallback
+- Category-based organization
+- Priority and status management
+- Analytics tracking for FAQ usage
+
+### Chat Features
+- Conversation history management
+- Message threading and context
+- Real-time WebSocket communication
+- Message status tracking (sent, delivered, read)
+- Token usage tracking for AI responses
+
+## Service Layer Guidelines
+
+### Service Classes
+- AIService: Handle AI model interactions
+- FAQService: Manage FAQ operations and search
+- NotificationService: Handle email and push notifications
+- AnalyticsService: Track user behavior and metrics
+
+### Error Handling
+- Use custom exception classes
+- Implement proper logging with context
+- Graceful degradation for external service failures
+- User-friendly error messages
+
+## Configuration Management
+
+### Environment Variables
+- Use pydantic-settings for configuration
+- Support .env files for local development
+- Environment-specific configurations
+- Secure handling of API keys and secrets
+
+### Database Configuration
+- Support both PostgreSQL and SQLite
+- Connection pooling configuration
+- Async database operations
+- Migration management with Alembic
+
+## Testing Guidelines
+
+### Test Structure
+- Unit tests for service classes
+- Integration tests for API endpoints
+- Database tests with test fixtures
+- Mock external services for testing
+
+### Test Patterns
+- Use pytest and pytest-asyncio
+- Mock AI services for consistent testing
+- Test database operations with test database
+- Implement proper test cleanup
+
+## Deployment Guidelines
+
+### Docker Configuration
+- Multi-stage Docker builds
+- Optimize for production deployment
+- Health checks and monitoring
+- Environment-specific configurations
+
+### Local Development
+- SQLite database for simplicity
+- Local AI models for free tier
+- File-based storage for uploads
+- Development-friendly logging
+
+## Performance Guidelines
+
+### Database Optimization
+- Use proper indexes for search queries
+- Implement connection pooling
+- Optimize query patterns
+- Use async operations for I/O
+
+### Caching Strategy
+- Redis for session storage
+- Cache frequently accessed data
+- Implement cache invalidation
+- Use Redis for rate limiting
+
+### AI Performance
+- Model caching and reuse
+- Batch processing for embeddings
+- Async processing for AI requests
+- Fallback mechanisms for model failures
+
+## Monitoring and Logging
+
+### Logging Standards
+- Use structured logging with structlog
+- Log levels: DEBUG, INFO, WARNING, ERROR
+- Include context in log messages
+- Implement log rotation
+
+### Metrics and Monitoring
+- Prometheus metrics for monitoring
+- Health check endpoints
+- Performance monitoring
+- Error tracking and alerting
+
+## Code Quality
+
+### Linting and Formatting
+- Use black for code formatting
+- Use isort for import sorting
+- Use flake8 for linting
+- Use mypy for type checking
+
+### Documentation
+- Docstrings for all functions and classes
+- API documentation with FastAPI
+- README files for setup instructions
+- Code comments for complex logic
+
+## Security Considerations
+
+### Authentication
+- JWT token management
+- Token refresh mechanisms
+- Secure password handling
+- Session management
+
+### Data Protection
+- GDPR compliance features
+- Data retention policies
+- Audit logging
+- Secure data handling
+
+### Input Validation
+- Pydantic schema validation
+- SQL injection prevention
+- XSS protection
+- Rate limiting implementation
+
+## Development Workflow
+
+### Git Guidelines
+- Use meaningful commit messages
+- Implement feature branches
+- Code review process
+- Automated testing in CI/CD
+
+### Environment Setup
+- Python 3.9+ requirement
+- Virtual environment management
+- Dependency management with pip
+- Development tools configuration
+
+## Free Tier Considerations
+
+### Local AI Models
+- Use sentence-transformers for embeddings
+- Implement fallback text search
+- Local model caching
+- Memory-efficient model loading
+
+### Storage Solutions
+- Local file storage for uploads
+- SQLite for local development
+- File-based caching
+- Simple backup strategies
+
+### External Services
+- Minimal external dependencies
+- Free tier API usage
+- Graceful degradation
+- Offline capabilities
+
+## Common Patterns
+
+### API Response Format
+```python
+{
+    "data": {...},
+    "message": "Success",
+    "status": "success"
+}
+```
+
+### Error Response Format
+```python
+{
+    "error": "Error message",
+    "status": "error",
+    "code": "ERROR_CODE"
+}
+```
+
+### Database Model Pattern
+```python
+class Model(Base):
+    __tablename__ = "table_name"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+```
+
+### Service Method Pattern
+```python
+async def method_name(self, param: Type) -> ReturnType:
+    """Method description."""
+    try:
+        # Implementation
+        return result
+    except Exception as e:
+        logger.error(f"Method failed: {e}")
+        raise CustomException("User-friendly message")
+```
+
+## File Naming Conventions
+- Use snake_case for Python files and functions
+- Use PascalCase for class names
+- Use UPPER_CASE for constants
+- Use descriptive names for variables and functions
+
+## Import Organization
+1. Standard library imports
+2. Third-party imports
+3. Local application imports
+4. Separate groups with blank lines
+
+## Documentation Standards
+- Use Google-style docstrings
+- Include type hints
+- Document exceptions and edge cases
+- Provide usage examples for complex functions
+
+This project prioritizes:
+- Free tier compatibility
+- Local development simplicity
+- Production readiness
+- Security and GDPR compliance
+- Scalable architecture
+- Comprehensive testing
+- Clear documentation 
